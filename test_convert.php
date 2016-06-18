@@ -12,11 +12,6 @@ if (!empty($error)) {
 	exit;
 }
 
-$newFileName = substr($oldFileName,0,strlen($oldFileName) - 4) . ".qif";
-
-header("Content-disposition: attachment; filename=$newFileName");
-header("Content-type: application/x-qif");
-
 include('run.php');
 
 $filename = $_FILES['csv']['tmp_name'];
