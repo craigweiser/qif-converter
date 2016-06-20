@@ -53,12 +53,7 @@ function generateTransaction($lineCsv, $bank) {
         exit;
     }
     
-    $transaction = "";
-    $transaction .= "D{$fields['date']}\n";
-    $transaction .= "T{$fields['amount']}\n";
-    $transaction .= "P{$fields['payee']}\n";
-    if ($fields['category'])
-        $transaction .= "L{$fields['category']}\n";
+    $transaction = createTransaction($fields);
 
     $transaction .= "^\n\n";
     return $transaction;
@@ -69,7 +64,7 @@ function spardabank($row) {
     $fields['amount'] = $row[3];
     $fields['payee'] = $row[2];
     $fields['payee'] = trim(preg_replace('/\s\s+/', ' ', $fields['payee']));
-    $fields['category'] = "";
+    $fields['category'] = mapPayeeToCategories($fields['payee']);
 
     return $fields;
 }
@@ -167,4 +162,31 @@ function getDelimiter($bank) {
     return $delimiter;
 }
 
-?>
+function mapPayeeToCategories($payee)
+{
+    $category = '';
+    $ini_array = parse_ini_file("account_mapping.ini", true);
+    $mappings = $ini_array['mappings'];
+    $accounts = $ini_array['accounts'];
+    foreach ($mappings as $key => $mapping) {
+        $pattern = '/'.$mapping.'/i';
+        //echo 'testing pattern: ' . $pattern . ' on payee: ' . $payee;
+        if(preg_match($pattern, $payee)) {
+            $category = $accounts[$key];
+        }
+    }
+    return $category;
+}
+
+
+function createTransaction($fields)
+{
+    $transaction = "";
+    $transaction .= "D{$fields['date']}\n";
+    $transaction .= "T{$fields['amount']}\n";
+    $transaction .= "P{$fields['payee']}\n";
+    if ($fields['category']) {
+        $transaction .= "L{$fields['category']}\n";
+    }
+    return $transaction;
+}

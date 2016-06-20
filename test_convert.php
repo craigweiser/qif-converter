@@ -16,7 +16,6 @@ include('run.php');
 
 $filename = $_FILES['csv']['tmp_name'];
 
-echo generateRegister($filename, $bank);
+echo '<pre>'.generateRegister($filename, $bank).'</pre>';
 
 unlink($filename);
-?>

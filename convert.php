@@ -24,4 +24,3 @@ $filename = $_FILES['csv']['tmp_name'];
 echo generateRegister($filename, $bank);
 
 unlink($filename);
-?>
